@@ -12,5 +12,5 @@ docker run -d --name todo-frontend -p 8080:80 todo-frontend
 http://localhost:8080  
 
 
-docker build -t todo-backend .
-docker run -d --name todo-backend -p 8000:8000 todo-backend
+docker build -t todo-backend .  
+docker run -d --name todo-backend -p 8000:8000 todo-backend  
