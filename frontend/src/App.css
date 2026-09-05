@@ -5,7 +5,7 @@ body {
 }
 
 .app {
-  width: 450px;
+  width: 500px;
   margin: 50px auto;
   padding: 25px;
   background: white;
@@ -16,6 +16,8 @@ body {
 h1 {
   text-align: center;
 }
+
+/* Form */
 
 .todo-form {
   display: flex;
@@ -28,8 +30,10 @@ h1 {
   font-size: 16px;
 }
 
+/* Buttons */
+
 button {
-  padding: 10px 15px;
+  padding: 8px 12px;
   border: none;
   border-radius: 5px;
   background: #007bff;
@@ -37,16 +41,45 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  opacity: 0.85;
+}
+
+/* Filters */
+
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.filters .active {
+  background: #333;
+}
+
+/* Statistics */
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Todo list */
+
 .todo-list {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
 }
 
 .todo-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   padding: 12px;
   margin-bottom: 10px;
   background: #f1f1f1;
@@ -54,15 +87,30 @@ button {
 }
 
 .todo-item span {
+  flex: 1;
   cursor: pointer;
 }
+
+.todo-item input {
+  flex: 1;
+  padding: 8px;
+}
+
+.todo-item button {
+  margin-left: 5px;
+}
+
+/* Completed */
 
 .completed {
   text-decoration: line-through;
   color: gray;
 }
 
+/* Empty */
+
 .empty {
   text-align: center;
   color: gray;
+  margin-top: 30px;
 }
