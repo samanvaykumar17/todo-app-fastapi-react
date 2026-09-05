@@ -1,54 +1,110 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TodoForm from "./components/TodoForm";
-import TodoList from "./components/TodoList";
 import TodoFilter from "./components/TodoFilter";
+import TodoList from "./components/TodoList";
+
+import {
+  getTodos,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+} from "./services/todoApi";
+
 import "./App.css";
 
 function App() {
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
 
-  // Add todo
-  const addTodo = (text) => {
-    const newTodo = {
-      id: Date.now(),
-      text,
-      completed: false,
-    };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    setTodos((currentTodos) => [...currentTodos, newTodo]);
-  };
+  // Load todos when application starts
+  useEffect(() => {
+    loadTodos();
+  }, []);
 
-  // Toggle todo
-  const toggleTodo = (id) => {
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) =>
-        todo.id === id
-          ? { ...todo, completed: !todo.completed }
-          : todo
-      )
-    );
-  };
+  async function loadTodos() {
+    try {
+      setLoading(true);
+      setError("");
 
-  // Delete todo
-  const deleteTodo = (id) => {
-    setTodos((currentTodos) =>
-      currentTodos.filter((todo) => todo.id !== id)
-    );
-  };
+      const data = await getTodos();
 
-  // Edit todo
-  const editTodo = (id, newText) => {
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) =>
-        todo.id === id
-          ? { ...todo, text: newText }
-          : todo
-      )
-    );
-  };
+      setTodos(data);
+    } catch (error) {
+      setError("Could not load todos");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  // Filter todos
+  async function addTodo(text) {
+    try {
+      const newTodo = await createTodo(text);
+
+      setTodos((currentTodos) => [
+        ...currentTodos,
+        newTodo,
+      ]);
+    } catch (error) {
+      console.error(error);
+      setError("Could not create todo");
+    }
+  }
+
+  async function toggleTodo(id) {
+    const todo = todos.find((todo) => todo.id === id);
+
+    if (!todo) return;
+
+    try {
+      const updatedTodo = await updateTodo(id, {
+        completed: !todo.completed,
+      });
+
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === id ? updatedTodo : todo
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      setError("Could not update todo");
+    }
+  }
+
+  async function deleteTodoItem(id) {
+    try {
+      await deleteTodo(id);
+
+      setTodos((currentTodos) =>
+        currentTodos.filter((todo) => todo.id !== id)
+      );
+    } catch (error) {
+      console.error(error);
+      setError("Could not delete todo");
+    }
+  }
+
+  async function editTodo(id, text) {
+    try {
+      const updatedTodo = await updateTodo(id, {
+        text,
+      });
+
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === id ? updatedTodo : todo
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      setError("Could not edit todo");
+    }
+  }
+
   const filteredTodos = todos.filter((todo) => {
     if (filter === "active") {
       return !todo.completed;
@@ -61,7 +117,6 @@ function App() {
     return true;
   });
 
-  // Statistics
   const totalTodos = todos.length;
 
   const completedTodos = todos.filter(
@@ -82,15 +137,27 @@ function App() {
       />
 
       <div className="stats">
-        <span>Total: {totalTodos}</span>
-        <span>Completed: {completedTodos}</span>
-        <span>Remaining: {remainingTodos}</span>
+        <p>Total: {totalTodos}</p>
+        <p>Active: {remainingTodos}</p>
+        <p>Completed: {completedTodos}</p>
       </div>
+
+      {loading && <p>Loading todos...</p>}
+
+      {error && (
+        <p className="error">
+          {error}
+        </p>
+      )}
+
+      {!loading && filteredTodos.length === 0 && (
+        <p>No todos found.</p>
+      )}
 
       <TodoList
         todos={filteredTodos}
         onToggle={toggleTodo}
-        onDelete={deleteTodo}
+        onDelete={deleteTodoItem}
         onEdit={editTodo}
       />
     </div>
