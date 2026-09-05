@@ -1,7 +1,7 @@
 node --version  
 npm --version  
-npm create vite@latest frontend -- --template react
+npm create vite@latest frontend -- --template react  
 
-cd frontend
-npm install
-npm run dev
+cd frontend  
+npm install  
+npm run dev  
